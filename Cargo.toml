@@ -1,0 +1,19 @@
+[package]
+name = "linq"
+version = "0.0.1-init"
+authors = ["StardustDL <stardustdl@163.com>"]
+edition = "2018"
+description = "Linq query in Rust."
+license = "Apache-2.0"
+repository = "https://github.com/StardustDL/Linq-in-Rust"
+readme = "README.md"
+keywords = ["linq", "functional"]
+
+[badges]
+travis-ci = { repository = "StardustDL/Linq-in-Rust", branch = "master" }
+codecov = { repository = "StardustDL/Linq-in-Rust", branch = "master", service = "github" }
+is-it-maintained-issue-resolution = { repository = "StardustDL/Linq-in-Rust" }
+is-it-maintained-open-issues = { repository = "StardustDL/Linq-in-Rust" }
+maintenance = { status = "experimental" }
+
+[dependencies]
