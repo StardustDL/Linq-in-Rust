@@ -18,8 +18,6 @@ Linq query in Rust (created by macros).
 
 **This project is under development!**
 
-The first meaningful version is *0.0.2*.
-
 ## Quick Start
 
 This is an example:
@@ -43,21 +41,41 @@ fn try_linq(){
 
 If you are familier with LINQ in C#, you will find this easy to use.
 
+When you use two `from` statement, import `linq::expansion`.
+
+```rust
+use linq::linq;
+use linq::expansion;
+
+fn select_many(){
+    let x = 1..5;
+    let y = vec![0, 0, 1, 0, 1, 2, 0, 1, 2, 3];
+    let e: Vec<i32> = linq!(from p; in x.clone(); from t; in 0..p; select t).collect();
+    assert_eq!(e, y);
+}
+```
+
 ## Linq Keywords
 
 - [x] from
+  - [x] 2-from
+  - [ ] multi-from
 - [x] in
 - [x] select
 - [x] where
 - [x] orderby
+- [x] descending
+- [ ] more...
 
 ## Query Operators
 
 All *italic* items mean they are not in roadmap. Happy for your suggestions.
 
+All **bold** items mean they are implemented in this project.
+
 - [x] where => filter
 - [x] select => map
-- [ ] select_many
+- [x] select_many => **expansion**
 - [x] skip => skip
 - [x] skip_while => skip_while
 - [x] take => take

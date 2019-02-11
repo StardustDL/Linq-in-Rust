@@ -1,6 +1,6 @@
 [package]
 name = "linq"
-version = "0.0.1-init"
+version = "0.0.1-preview"
 authors = ["StardustDL <stardustdl@163.com>"]
 edition = "2018"
 description = "Linq query in Rust."
