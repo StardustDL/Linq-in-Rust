@@ -18,6 +18,9 @@ pub use m_skip_while::QSkipWhile;
 mod m_take_while;
 pub use m_take_while::QTakeWhile;
 
+mod m_concate;
+use m_concate::QConcate;
+
 pub trait Queryable {
     type Item;
 
@@ -30,6 +33,17 @@ pub trait Queryable {
             }
         }
         self.next()
+    }
+
+    fn count(mut self) -> usize
+    where
+        Self: Sized,
+    {
+        let mut count = 0;
+        while self.next().is_some() {
+            count += 1;
+        }
+        count
     }
 
     fn select<B, F>(self, selector: F) -> QSelect<Self, F>
@@ -77,6 +91,13 @@ pub trait Queryable {
     {
         QTakeWhile::new(self, predicate)
     }
+
+    fn concate(self, other: Self) -> QConcate<Self>
+    where
+        Self: Sized,
+    {
+        QConcate::new(self, other)
+    }
 }
 
 pub struct IteratorQueryable<I: Iterator> {
@@ -111,4 +132,30 @@ impl<Q: Queryable> Iterator for QueryableIterator<Q> {
     fn next(&mut self) -> Option<Q::Item> {
         self.query.next()
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn count() {
+        let sqr = into_queryable(1..10).where_by(|val| val <= &5);
+        assert_eq!(5, sqr.count());
+    }
+
+    #[test]
+    fn element_at() {
+        let mut sqr = into_queryable(1..10).where_by(|val| val <= &5);
+        assert_eq!(Some(3), sqr.element_at(3));
+        assert_eq!(None, sqr.element_at(3));
+    }
+}
+
+#[macro_export]
+macro_rules! query {
+  (from $v:ident in $c:ident select $ms:expr) =>
+  { $c.map(|$v| $ms) };
+  (from $v:ident in $c:ident $(where $mw:expr;)+ select $ms:expr) =>
+  { $c.filter(|$v| ($(&& $mv)*) ).map(|$v| $ms) };
 }
