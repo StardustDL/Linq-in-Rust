@@ -33,7 +33,7 @@ fn try_linq(){
     let y: Vec<i32> = y.into_iter().map(|t| t * 2).collect();
 
     let e: Vec<i32> =
-        linq!(from p; in x.clone(); where p <= &5; orderby -p; select p * 2).collect();
+        linq!(from p in x.clone(); where p <= &5; orderby -p; select p * 2).collect();
     
     assert_eq!(e, y);
 }
@@ -41,16 +41,33 @@ fn try_linq(){
 
 If you are familier with LINQ in C#, you will find this easy to use.
 
-When you use two `from` statement, import `linq::expansion`.
+When you use `orderby` and `descending` statement, import `linq::linq_order_by` to your crate root.
+
+When you use two `from` statement, import `linq::linq_multi_from` to your crate root.
 
 ```rust
 use linq::linq;
-use linq::expansion;
+use linq::linq_multi_from;
 
 fn select_many(){
     let x = 1..5;
     let y = vec![0, 0, 1, 0, 1, 2, 0, 1, 2, 3];
-    let e: Vec<i32> = linq!(from p; in x.clone(); from t; in 0..p; select t).collect();
+    let e: Vec<i32> = linq!(
+        from p in x.clone(); 
+        from t in 0..p; select t).collect();
+    assert_eq!(e, y);
+}
+```
+
+If you want to filter the first iterator, use nesting `linq!`:
+
+```rust
+fn select_many_nest() {
+    let x = 1..5;
+    let y = vec![0, 1, 0, 1, 2, 3];
+    let e: Vec<i32> = linq!(
+        from p in linq!(from y in x.clone(); where y % 2 == 0; select y); 
+        from t in 0..p; select t).collect();
     assert_eq!(e, y);
 }
 ```
@@ -59,12 +76,13 @@ fn select_many(){
 
 - [x] from
   - [x] 2-from
-  - [ ] multi-from
+  - [x] multi-from (implemented by nesting `linq!`)
 - [x] in
 - [x] select
 - [x] where
 - [x] orderby
 - [x] descending
+- [ ] group_by
 - [ ] more...
 
 ## Query Operators
@@ -75,7 +93,7 @@ All **bold** items mean they are implemented in this project.
 
 - [x] where => filter
 - [x] select => map
-- [x] select_many => **expansion**
+- [x] select_many => **linq_multi_from**
 - [x] skip => skip
 - [x] skip_while => skip_while
 - [x] take => take
@@ -83,8 +101,8 @@ All **bold** items mean they are implemented in this project.
 - [ ] join
 - [ ] *group_join*
 - [x] concate => chain
-- [ ] *order_by*
-- [ ] *order_by_descending*
+- [x] order_by => **linq_order_by**
+- [x] order_by_descending => **linq_order_by**
 - [ ] *then_by*
 - [ ] *then_by_descending*
 - [x] reverse => rev

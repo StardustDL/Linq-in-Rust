@@ -1,16 +1,10 @@
-pub struct Expansion<I, T, F> {
+pub struct ExpansionIterator<I, T, F> {
     iter: I,
     citer: Option<T>,
     func: F,
 }
 
-impl<I, T, F> Expansion<I, T, F> {
-    pub fn new(iter: I, citer: Option<T>, func: F) -> Self {
-        Expansion { iter, citer, func }
-    }
-}
-
-impl<I: Iterator, T: Iterator, F> Iterator for Expansion<I, T, F>
+impl<I: Iterator, T: Iterator, F> Iterator for ExpansionIterator<I, T, F>
 where
     F: FnMut(I::Item) -> T,
 {
@@ -31,5 +25,16 @@ where
             }
         }
         None
+    }
+}
+
+pub fn expansion<I: Iterator, T: Iterator, F>(iter: I, func: F) -> ExpansionIterator<I, T, F>
+where
+    F: FnMut(I::Item) -> T,
+{
+    ExpansionIterator {
+        iter,
+        citer: None,
+        func,
     }
 }
