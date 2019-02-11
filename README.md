@@ -13,11 +13,74 @@
 
 Linq query in Rust.
 
+- Inspired by [LINQ in .NET](https://docs.microsoft.com/en-us/dotnet/csharp/linq/).
+- [What's LINQ](https://en.wikipedia.org/wiki/Language_Integrated_Query)
+
 **This project is under development!**
 
 The first meaningful version is *0.0.2*.
 
+## Quick Start
+
+This is an example:
+
+```rust
+fn try_linq(){
+    let iter = 1..100;
+
+    let output : Vec<isize> = 
+        linq::into_queryable(iter)
+            .where_by(|val| val>=&50)
+            .take(5)
+            .select(|val| val*val)
+            .into_iter().collect();
+
+    assert_eq!(output, &[50*50,51*51,52*52,53*53,54*54]);
+}
+```
+
+If you are familier with LINQ in C#, you will find this easy to use.
+
+## Query Operators
+
+All *italic* items mean they are not in roadmap. Happy for your suggestions.
+
+- [x] where_by
+- [x] select
+- [ ] select_many
+- [x] skip
+- [x] skip_while
+- [x] take
+- [x] take_while
+- [ ] join
+- [ ] *group_join*
+- [ ] concate
+- [ ] *order_by*
+- [ ] *order_by_descending*
+- [ ] *then_by*
+- [ ] *then_by_descending*
+- [ ] reverse
+- [ ] *group_by*
+- [ ] *distinct*
+- [ ] *union*
+- [ ] *intersect*
+- [ ] *except*
+- [ ] first
+- [ ] single
+- [x] element_at
+- [ ] all
+- [ ] any
+- [ ] contains
+- [ ] count
+- [ ] sum
+- [ ] min
+- [ ] max
+- [ ] average
+- [ ] aggregate
+
 ## Development
+
+We need more unit-test samples. If you have any ideas, open issues to tell us.
 
 ```sh
 $ cargo test
