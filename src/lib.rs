@@ -1,161 +1,69 @@
 //! Linq query in Rust.
 
-mod m_select;
-pub use m_select::QSelect;
-
-mod m_where;
-pub use m_where::QWhere;
-
-mod m_skip;
-pub use m_skip::QSkip;
-
-mod m_take;
-pub use m_take::QTake;
-
-mod m_skip_while;
-pub use m_skip_while::QSkipWhile;
-
-mod m_take_while;
-pub use m_take_while::QTakeWhile;
-
-mod m_concate;
-use m_concate::QConcate;
-
-pub trait Queryable {
-    type Item;
-
-    fn next(&mut self) -> Option<Self::Item>;
-
-    fn element_at(&mut self, index: usize) -> Option<Self::Item> {
-        if index > 0 {
-            for _ in 0..index - 1 {
-                self.next();
-            }
+#[macro_export]
+macro_rules! linq {
+    (from $v:ident; in $c:expr; select $ms:expr) =>
+    {
+        $c.map(|$v| $ms)
+    };
+    (from $v:ident; in $c:expr; $(where $mw:expr;)+ select $ms:expr) =>
+    {
+        $c.filter(|$v| true $(&& $mw)+ ).map(|$v| $ms)
+    };
+    (from $v:ident; in $c:expr; orderby $mo:expr; select $ms:expr) =>
+    {
+        {
+            let mut temp : Vec<_> = $c.collect();
+            temp.sort_by_key(|$v| $mo);
+            temp.into_iter().map(|$v| $ms)
         }
-        self.next()
-    }
-
-    fn count(mut self) -> usize
-    where
-        Self: Sized,
+    };
+    (from $v:ident; in $c:expr; $(where $mw:expr;)+ orderby $mo:expr; select $ms:expr) =>
     {
-        let mut count = 0;
-        while self.next().is_some() {
-            count += 1;
+        {
+            let mut temp : Vec<_> = $c.filter(|$v| true $(&& $mw)+ ).collect();
+            temp.sort_by_key(|$v| $mo);
+            temp.into_iter().map(|$v| $ms)
         }
-        count
-    }
-
-    fn select<B, F>(self, selector: F) -> QSelect<Self, F>
-    where
-        Self: Sized,
-        F: FnMut(Self::Item) -> B,
-    {
-        QSelect::new(self, selector)
-    }
-
-    fn where_by<P>(self, predicate: P) -> QWhere<Self, P>
-    where
-        Self: Sized,
-        P: FnMut(&Self::Item) -> bool,
-    {
-        QWhere::new(self, predicate)
-    }
-
-    fn skip(self, count: usize) -> QSkip<Self>
-    where
-        Self: Sized,
-    {
-        QSkip::new(self, count)
-    }
-
-    fn skip_while<P>(self, predicate: P) -> QSkipWhile<Self, P>
-    where
-        Self: Sized,
-        P: FnMut(&Self::Item) -> bool,
-    {
-        QSkipWhile::new(self, predicate)
-    }
-
-    fn take(self, count: usize) -> QTake<Self>
-    where
-        Self: Sized,
-    {
-        QTake::new(self, count)
-    }
-
-    fn take_while<P>(self, predicate: P) -> QTakeWhile<Self, P>
-    where
-        Self: Sized,
-        P: FnMut(&Self::Item) -> bool,
-    {
-        QTakeWhile::new(self, predicate)
-    }
-
-    fn concate(self, other: Self) -> QConcate<Self>
-    where
-        Self: Sized,
-    {
-        QConcate::new(self, other)
-    }
-}
-
-pub struct IteratorQueryable<I: Iterator> {
-    iter: I,
-}
-
-impl<I: Iterator> Queryable for IteratorQueryable<I> {
-    type Item = I::Item;
-
-    fn next(&mut self) -> Option<I::Item> {
-        self.iter.next()
-    }
-}
-
-pub fn into_queryable<I: Iterator>(iter: I) -> IteratorQueryable<I> {
-    IteratorQueryable { iter }
-}
-
-pub struct QueryableIterator<Q: Queryable> {
-    query: Q,
-}
-
-impl<Q: Queryable> QueryableIterator<Q> {
-    pub fn new(query: Q) -> Self {
-        QueryableIterator { query }
-    }
-}
-
-impl<Q: Queryable> Iterator for QueryableIterator<Q> {
-    type Item = Q::Item;
-
-    fn next(&mut self) -> Option<Q::Item> {
-        self.query.next()
-    }
+    };
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
-    fn count() {
-        let sqr = into_queryable(1..10).where_by(|val| val <= &5);
-        assert_eq!(5, sqr.count());
+    fn select() {
+        let x = 1..100;
+        let y: Vec<i32> = x.clone().map(|p| p * 2).collect();
+        let e: Vec<i32> = linq!(from p; in x.clone(); select p * 2).collect();
+        assert_eq!(e, y);
     }
 
     #[test]
-    fn element_at() {
-        let mut sqr = into_queryable(1..10).where_by(|val| val <= &5);
-        assert_eq!(Some(3), sqr.element_at(3));
-        assert_eq!(None, sqr.element_at(3));
+    fn where_by() {
+        let x = 1..100;
+        let y: Vec<i32> = x.clone().filter(|p| p <= &5).map(|p| p * 2).collect();
+        let e: Vec<i32> = linq!(from p; in x.clone(); where p <= &5; select p * 2).collect();
+        assert_eq!(e, y);
     }
-}
 
-#[macro_export]
-macro_rules! query {
-  (from $v:ident in $c:ident select $ms:expr) =>
-  { $c.map(|$v| $ms) };
-  (from $v:ident in $c:ident $(where $mw:expr;)+ select $ms:expr) =>
-  { $c.filter(|$v| ($(&& $mv)*) ).map(|$v| $ms) };
+    #[test]
+    fn order_by() {
+        let x = 1..100;
+        let mut y: Vec<i32> = x.clone().collect();
+        y.sort_by_key(|t| -t);
+        let y: Vec<i32> = y.into_iter().map(|t| t * 2).collect();
+        let e: Vec<i32> = linq!(from p; in x.clone(); orderby -p; select p * 2).collect();
+        assert_eq!(e, y);
+    }
+
+    #[test]
+    fn where_order() {
+        let x = 1..100;
+        let mut y: Vec<i32> = x.clone().filter(|p| p <= &5).collect();
+        y.sort_by_key(|t| -t);
+        let y: Vec<i32> = y.into_iter().map(|t| t * 2).collect();
+        let e: Vec<i32> =
+            linq!(from p; in x.clone(); where p <= &5; orderby -p; select p * 2).collect();
+        assert_eq!(e, y);
+    }
 }

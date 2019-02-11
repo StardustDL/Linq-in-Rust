@@ -11,7 +11,7 @@
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/StardustDL/Linq-in-Rust.svg)](http://isitmaintained.com/project/StardustDL/Linq-in-Rust "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/StardustDL/Linq-in-Rust.svg)](http://isitmaintained.com/project/StardustDL/Linq-in-Rust "Percentage of issues still open")
 
-Linq query in Rust.
+Linq query in Rust (created by macros).
 
 - Inspired by [LINQ in .NET](https://docs.microsoft.com/en-us/dotnet/csharp/linq/).
 - [What's LINQ](https://en.wikipedia.org/wiki/Language_Integrated_Query)
@@ -25,53 +25,63 @@ The first meaningful version is *0.0.2*.
 This is an example:
 
 ```rust
+use linq::linq;
+
 fn try_linq(){
-    let iter = 1..100;
+    let x = 1..100;
 
-    let output : Vec<isize> = 
-        linq::into_queryable(iter)
-            .where_by(|val| val>=&50)
-            .take(5)
-            .select(|val| val*val)
-            .into_iter().collect();
+    let mut y: Vec<i32> = x.clone().filter(|p| p <= &5).collect();
+    y.sort_by_key(|t| -t);
+    let y: Vec<i32> = y.into_iter().map(|t| t * 2).collect();
 
-    assert_eq!(output, &[50*50,51*51,52*52,53*53,54*54]);
+    let e: Vec<i32> =
+        linq!(from p; in x.clone(); where p <= &5; orderby -p; select p * 2).collect();
+    
+    assert_eq!(e, y);
 }
 ```
 
 If you are familier with LINQ in C#, you will find this easy to use.
 
+## Linq Keywords
+
+- [x] from
+- [x] in
+- [x] select
+- [x] where
+- [x] orderby
+
 ## Query Operators
 
 All *italic* items mean they are not in roadmap. Happy for your suggestions.
 
-- [x] where_by
-- [x] select
+- [x] where => filter
+- [x] select => map
 - [ ] select_many
-- [x] skip
-- [x] skip_while
-- [x] take
-- [x] take_while
+- [x] skip => skip
+- [x] skip_while => skip_while
+- [x] take => take
+- [x] take_while => take_while
 - [ ] join
 - [ ] *group_join*
-- [ ] concate
+- [x] concate => chain
 - [ ] *order_by*
 - [ ] *order_by_descending*
 - [ ] *then_by*
 - [ ] *then_by_descending*
-- [ ] reverse
+- [x] reverse => rev
 - [ ] *group_by*
 - [ ] *distinct*
 - [ ] *union*
 - [ ] *intersect*
 - [ ] *except*
-- [ ] first
+- [x] first => next
 - [ ] single
-- [x] element_at
-- [ ] all
-- [ ] any
+- [x] element_at => nth
+- [x] all => all
+- [x] any => any
 - [ ] contains
-- [ ] count
+- [x] count => count
 - [ ] sum
 - [ ] min
 - [ ] max
