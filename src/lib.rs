@@ -1,28 +1,124 @@
 //! Linq query in Rust.
 
-mod m_expansion;
-mod m_order_by;
-mod m_select;
-mod m_where_by;
-mod m_zip_from;
+mod ops;
+use ops::{
+    OrderedIterator, SelectManyIterator, SelectManySingleIterator, SingleMapIterator, WhereIterator,
+};
 
-pub mod ops {
-    pub use super::m_expansion::expansion as select_many;
+pub trait Queryable: Iterator {
+    fn where_by<P>(self, predicate: P) -> WhereIterator<Self, P>
+    where
+        Self: Sized,
+        P: FnMut(&Self::Item) -> bool;
 
-    pub use super::m_zip_from::zip_from as select_many_zip;
+    fn select<TResult, F>(self, f: F) -> SingleMapIterator<Self, F>
+    where
+        Self: Sized,
+        F: FnMut(Self::Item) -> TResult;
 
-    pub use super::m_order_by::order_by;
+    fn select_many_single<TResult, TCollection, F>(
+        self,
+        f: F,
+    ) -> SelectManySingleIterator<Self, TCollection, F>
+    where
+        Self: Sized,
+        TCollection: Queryable<Item = TResult>,
+        F: FnMut(Self::Item) -> TCollection;
 
-    pub use super::m_where_by::where_by;
+    fn select_many<TResult, TCollection, TItem, FC, FR>(
+        self,
+        fc: FC,
+        fr: FR,
+    ) -> SelectManyIterator<Self, TCollection, FC, FR>
+    where
+        Self: Sized,
+        Self::Item: Clone,
+        TCollection: Queryable<Item = TItem>,
+        FC: FnMut(Self::Item) -> TCollection,
+        FR: FnMut(Self::Item, TItem) -> TResult;
 
-    pub use super::m_select::select_one;
+    fn order_by<TKey, F>(self, f: F) -> OrderedIterator<Self::Item>
+    where
+        Self: Sized,
+        TKey: Ord,
+        F: Fn(&Self::Item) -> TKey;
 
-    pub use super::m_select::select_two;
+    fn order_by_descending<TKey, F>(self, f: F) -> OrderedIterator<Self::Item>
+    where
+        Self: Sized,
+        TKey: Ord,
+        F: Fn(&Self::Item) -> TKey;
+}
+
+impl<I, T> Queryable for I
+where
+    I: Iterator<Item = T>,
+{
+    fn where_by<P>(self, predicate: P) -> WhereIterator<Self, P>
+    where
+        Self: Sized,
+        P: FnMut(&Self::Item) -> bool,
+    {
+        ops::where_by(self, predicate)
+    }
+
+    fn select<TResult, F>(self, f: F) -> SingleMapIterator<Self, F>
+    where
+        Self: Sized,
+        F: FnMut(Self::Item) -> TResult,
+    {
+        ops::select(self, f)
+    }
+
+    fn select_many_single<TResult, TCollection, F>(
+        self,
+        f: F,
+    ) -> SelectManySingleIterator<Self, TCollection, F>
+    where
+        Self: Sized,
+        TCollection: Queryable<Item = TResult>,
+        F: FnMut(Self::Item) -> TCollection,
+    {
+        ops::select_many_single(self, f)
+    }
+
+    fn select_many<TResult, TCollection, TItem, FC, FR>(
+        self,
+        fc: FC,
+        fr: FR,
+    ) -> SelectManyIterator<Self, TCollection, FC, FR>
+    where
+        Self: Sized,
+        Self::Item: Clone,
+        TCollection: Queryable<Item = TItem>,
+        FC: FnMut(Self::Item) -> TCollection,
+        FR: FnMut(Self::Item, TItem) -> TResult,
+    {
+        ops::select_many(self, fc, fr)
+    }
+
+    fn order_by<TKey, F>(self, f: F) -> OrderedIterator<Self::Item>
+    where
+        Self: Sized,
+        TKey: Ord,
+        F: Fn(&Self::Item) -> TKey,
+    {
+        ops::order_by(self, f, false)
+    }
+
+    fn order_by_descending<TKey, F>(self, f: F) -> OrderedIterator<Self::Item>
+    where
+        Self: Sized,
+        TKey: Ord,
+        F: Fn(&Self::Item) -> TKey,
+    {
+        ops::order_by(self, f, true)
+    }
 }
 
 /// Create linq query
 ///
-/// Use `;` to split each sub-statement.
+/// Use `,` to split each sub-statement.
 ///
 /// See readme for more usage.
 ///
@@ -44,40 +140,42 @@ pub mod ops {
 macro_rules! linq {
     (from $v:ident in $c:expr, select $ms:expr) =>
     {
-        $crate::ops::select_one($c, |$v| $ms)
+        $c.select(|$v| $ms)
     };
     (from $v:ident in $c:expr, $(where $mw:expr,)+ select $ms:expr) =>
     {
-        $crate::ops::select_one($c.filter(|$v| true $(&& $mw)+ ), |$v| $ms)
+        $c.where_by(|$v| true $(&& $mw)+ ).select(|$v| $ms)
     };
     (from $v:ident in $c:expr, orderby $mo:expr, select $ms:expr) =>
     {
-        $crate::ops::select_one($crate::ops::order_by($c, |$v| $mo, false), |$v| $ms)
+        $c.order_by(|$v| $mo).select(|$v| $ms)
     };
     (from $v:ident in $c:expr, orderby $mo:expr, descending, select $ms:expr) =>
     {
-        $crate::ops::select_one($crate::ops::order_by($c, |$v| $mo, true),|$v| $ms)
+        $c.order_by_descending(|$v| $mo).select(|$v| $ms)
     };
     (from $v:ident in $c:expr, $(where $mw:expr,)+ orderby $mo:expr, select $ms:expr) =>
     {
-        $crate::ops::select_one($crate::ops::order_by($c.filter(|$v| true $(&& $mw)+ ), |$v| $mo, false),|$v| $ms)
+        $c.where_by(|$v| true $(&& $mw)+ ).order_by(|$v| $mo).select(|$v| $ms)
     };
     (from $v:ident in $c:expr, $(where $mw:expr,)+ orderby $mo:expr, descending, select $ms:expr) =>
     {
-        $crate::ops::select_one($crate::ops::order_by($c.filter(|$v| true $(&& $mw)+ ), |$v| $mo, true),|$v| $ms)
+        $c.where_by(|$v| true $(&& $mw)+ ).order_by_descending(|$v| $mo).select(|$v| $ms)
     };
     (from $v0:ident in $c0:expr, from $v:ident in $c:expr, select $ms:expr) =>
     {
-        $crate::ops::select_one($crate::ops::select_many($c0, |$v0| $c),|$v| $ms)
+        $c0.select_many_single(|$v0| $c).select(|$v| $ms)
     };
     (from $v0:ident in $c0:expr, zfrom $v:ident in $c:expr, select $ms:expr) =>
     {
-        $crate::ops::select_two($crate::ops::select_many_zip($c0, |$v0| $c),|$v0, $v| $ms)
+        $c0.select_many(|$v0| $c, |$v0, $v| $ms)
     };
 }
 
 #[cfg(test)]
 mod tests {
+    use super::Queryable;
+
     #[test]
     fn select() {
         let x = 1..100;

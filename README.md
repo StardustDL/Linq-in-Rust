@@ -24,6 +24,7 @@ This is an example:
 
 ```rust
 use linq::linq;
+use linq::Queryable;
 
 fn try_linq(){
     let x = 1..100;
@@ -43,11 +44,74 @@ If you are familier with LINQ in C#, you will find this is easy to use.
 
 ## Usage
 
-The query statement begins with `from` clause and ends with `select` clause. Use `,` to seperate every clause.
+The two imports is necessary:
+
+```rust
+use linq::linq;
+use linq::Queryable;
+```
+
+### Methods
+
+The trait `linq::Queryable` supports LINQ methods on `Iterator`. You can find the correspondences below.
+
+All *italic* items mean they are not in roadmap. Happy for your suggestions.
+
+All **bold** items mean they are implemented in this project. You can find them in module `linq::ops`.
+
+- [x] where => **where_by** => filter
+- [x] select => **select** => map
+- [x] select_many => **select_many_single, select_many**
+- [x] skip => skip
+- [x] skip_while => skip_while
+- [x] take => take
+- [x] take_while => take_while
+- [ ] join
+- [ ] *group_join*
+- [x] concate => chain
+- [x] order_by => **order_by**
+- [x] order_by_descending => **order_by_descending**
+- [ ] *then_by*
+- [ ] *then_by_descending*
+- [x] reverse => rev
+- [ ] *group_by*
+- [ ] *distinct*
+- [ ] *union*
+- [ ] *intersect*
+- [ ] *except*
+- [x] first => next
+- [ ] single
+- [x] element_at => nth
+- [x] all => all
+- [x] any => any
+- [ ] contains
+- [x] count => count
+- [ ] sum
+- [ ] min
+- [ ] max
+- [ ] average
+- [ ] aggregate
+
+### Expressions
+
+The query expression begins with `from` clause and ends with `select` clause. Use `,` to seperate every clause.
 
 ```rust
 linq!(from x in coll, select x)
 ```
+
+Now we supports these keywords:
+
+- [x] from
+  - [x] from (`select_many_single`)
+  - [x] zfrom (`select_many`)
+- [x] in
+- [x] select
+- [x] where
+- [x] orderby
+- [x] descending
+- [ ] group_by
+- [ ] more...
 
 ### From
 
@@ -105,58 +169,6 @@ orderby <expr>, descending,
 ```
 
 You can use `orderby` clause in single-from query. This query will collect the iterator, and sort them by the expression, then return the new iterator.
-
-## Linq Keywords
-
-- [x] from
-  - [x] from (child-from)
-  - [x] zfrom (zip-from)
-- [x] in
-- [x] select
-- [x] where
-- [x] orderby
-- [x] descending
-- [ ] group_by
-- [ ] more...
-
-## Query Operators
-
-All *italic* items mean they are not in roadmap. Happy for your suggestions.
-
-All **bold** items mean they are implemented in this project. You can find them in module `linq::ops`.
-
-- [x] where => **where_by** => filter
-- [x] select => **select_one** => map
-- [x] select_many => **select_many, select_many_zip, select_two**
-- [x] skip => skip
-- [x] skip_while => skip_while
-- [x] take => take
-- [x] take_while => take_while
-- [ ] join
-- [ ] *group_join*
-- [x] concate => chain
-- [x] order_by => **order_by**
-- [x] order_by_descending => **order_by**
-- [ ] *then_by*
-- [ ] *then_by_descending*
-- [x] reverse => rev
-- [ ] *group_by*
-- [ ] *distinct*
-- [ ] *union*
-- [ ] *intersect*
-- [ ] *except*
-- [x] first => next
-- [ ] single
-- [x] element_at => nth
-- [x] all => all
-- [x] any => any
-- [ ] contains
-- [x] count => count
-- [ ] sum
-- [ ] min
-- [ ] max
-- [ ] average
-- [ ] aggregate
 
 ## Development
 

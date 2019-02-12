@@ -1,4 +1,5 @@
 use linq::linq;
+use linq::Queryable;
 
 #[test]
 fn try_linq() {
