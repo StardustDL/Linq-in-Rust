@@ -3,9 +3,10 @@ name = "linq"
 version = "0.0.1-preview2"
 authors = ["StardustDL <stardustdl@163.com>"]
 edition = "2018"
-description = "Linq query in Rust."
+description = "Language Integrated Query in Rust."
 license = "Apache-2.0"
 repository = "https://github.com/StardustDL/Linq-in-Rust"
+homepage = "https://github.com/StardustDL/Linq-in-Rust"
 readme = "README.md"
 keywords = ["linq", "functional"]
 
@@ -14,6 +15,6 @@ travis-ci = { repository = "StardustDL/Linq-in-Rust", branch = "master" }
 codecov = { repository = "StardustDL/Linq-in-Rust", branch = "master", service = "github" }
 is-it-maintained-issue-resolution = { repository = "StardustDL/Linq-in-Rust" }
 is-it-maintained-open-issues = { repository = "StardustDL/Linq-in-Rust" }
-maintenance = { status = "experimental" }
+maintenance = { status = "actively-developed" }
 
 [dependencies]

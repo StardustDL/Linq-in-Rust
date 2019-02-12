@@ -100,12 +100,3 @@ where
         func,
     }
 }
-
-pub type SingleMapIterator<I, F> = std::iter::Map<I, F>;
-
-pub fn select<I: Iterator, B, F>(iter: I, f: F) -> SingleMapIterator<I, F>
-where
-    F: FnMut(I::Item) -> B,
-{
-    iter.map(f)
-}

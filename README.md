@@ -11,7 +11,7 @@
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/StardustDL/Linq-in-Rust.svg)](http://isitmaintained.com/project/StardustDL/Linq-in-Rust "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/StardustDL/Linq-in-Rust.svg)](http://isitmaintained.com/project/StardustDL/Linq-in-Rust "Percentage of issues still open")
 
-Linq query in Rust (created by declarative macros).
+Language Integrated Query in Rust (created by declarative macros).
 
 - Inspired by [LINQ in .NET](https://docs.microsoft.com/en-us/dotnet/csharp/linq/).
 - [What's LINQ](https://en.wikipedia.org/wiki/Language_Integrated_Query)
@@ -26,16 +26,27 @@ This is an example:
 use linq::linq;
 use linq::Queryable;
 
-fn try_linq(){
+fn try_linq_methods() {
     let x = 1..100;
-
     let mut y: Vec<i32> = x.clone().filter(|p| p <= &5).collect();
     y.sort_by_key(|t| -t);
     let y: Vec<i32> = y.into_iter().map(|t| t * 2).collect();
+    let e: Vec<i32> = x
+        .clone()
+        .where_by(|p| p <= &5)
+        .order_by(|p| -p)
+        .select(|p| p * 2)
+        .collect();
+    assert_eq!(e, y);
+}
 
+fn try_linq_expr() {
+    let x = 1..100;
+    let mut y: Vec<i32> = x.clone().filter(|p| p <= &5).collect();
+    y.sort_by_key(|t| -t);
+    let y: Vec<i32> = y.into_iter().map(|t| t * 2).collect();
     let e: Vec<i32> =
         linq!(from p in x.clone(), where p <= &5, orderby -p, select p * 2).collect();
-    
     assert_eq!(e, y);
 }
 ```
@@ -47,20 +58,20 @@ If you are familier with LINQ in C#, you will find this is easy to use.
 The two imports is necessary:
 
 ```rust
-use linq::linq;
-use linq::Queryable;
+use linq::linq;         // for `linq!` macro
+use linq::iter::Enumerable;    // for LINQ methods and `linq!` macro
 ```
 
 ### Methods
 
 The trait `linq::Queryable` supports LINQ methods on `Iterator`. You can find the correspondences below.
 
-All *italic* items mean they are not in roadmap. Happy for your suggestions.
-
-All **bold** items mean they are implemented in this project. You can find them in module `linq::ops`.
+- Normal items mean they are builtin methods of `Iterator` in std.
+- **Bold** items mean they are implemented in this project. You can find them in module `linq::iter` (but they are private so that you can't import them).
+- *Italic* items mean they are not in roadmap. Happy for your suggestions.
 
 - [x] where => **where_by** => filter
-- [x] select => **select** => map
+- [x] **select** => map
 - [x] select_many => **select_many_single, select_many**
 - [x] skip => skip
 - [x] skip_while => skip_while
@@ -68,9 +79,9 @@ All **bold** items mean they are implemented in this project. You can find them 
 - [x] take_while => take_while
 - [ ] join
 - [ ] *group_join*
-- [x] concate => chain
-- [x] order_by => **order_by**
-- [x] order_by_descending => **order_by_descending**
+- [x] **concate** => chain
+- [x] **order_by**
+- [x] **order_by_descending**
 - [ ] *then_by*
 - [ ] *then_by_descending*
 - [x] reverse => rev
