@@ -75,8 +75,8 @@ fn select_many_nest() {
 ## Linq Keywords
 
 - [x] from
-  - [x] 2-from
-  - [x] multi-from (implemented by nesting `linq!`)
+  - [x] from (child-from)
+  - [x] zfrom (zip-from)
 - [x] in
 - [x] select
 - [x] where
