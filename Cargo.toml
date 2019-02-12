@@ -1,6 +1,6 @@
 [package]
 name = "linq"
-version = "0.0.1-preview2"
+version = "0.0.1-release"
 authors = ["StardustDL <stardustdl@163.com>"]
 edition = "2018"
 description = "Language Integrated Query in Rust."

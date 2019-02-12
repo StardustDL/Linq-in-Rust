@@ -1,5 +1,5 @@
-use super::{m_builtin, m_order_by, m_select};
-use m_builtin::{ConcateIterator,WhereIterator,SelectIterator};
+use super::{m_builtin, m_method, m_order_by, m_select};
+use m_builtin::{ConcateIterator, ReverseIterator, SelectIterator, WhereIterator};
 use m_order_by::OrderedIterator;
 use m_select::{SelectManyIterator, SelectManySingleIterator};
 
@@ -165,12 +165,142 @@ pub trait Enumerable: Iterator {
         m_order_by::order_by(self, f, true)
     }
 
+    /// Concatenates two sequences.
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// use linq::iter::Enumerable;
+    /// 
+    /// let x = 0..100;
+    /// let y = 100..200;
+    /// let e = x.concate(y);
+    /// assert!((0..200).eq(e));
+    /// ```
     fn concate<U>(self, other: U) -> ConcateIterator<Self, U>
     where
         Self: Sized,
         U: Enumerable<Item = Self::Item>,
     {
         m_builtin::concate(self, other)
+    }
+
+    /// Returns the first element of a sequence.
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// use linq::iter::Enumerable;
+    /// 
+    /// assert!((0..0).first().is_none());
+    /// assert_eq!((0..2).first(), Some(0));
+    /// assert_eq!((0..1).first(), Some(0));
+    /// ```
+    fn first(self) -> Option<Self::Item>
+    where
+        Self: Sized,
+    {
+        m_builtin::first(self)
+    }
+
+    /// Returns the index-th element of the iterator.
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// use linq::iter::Enumerable;
+    /// 
+    /// let a = [1, 2, 3];
+    /// 
+    /// assert_eq!(a.iter().element_at(0), Some(&1));
+    /// assert_eq!(a.iter().element_at(1), Some(&2));
+    /// assert_eq!(a.iter().element_at(2), Some(&3));
+    /// assert_eq!(a.iter().element_at(3), None);
+    /// ```
+    fn element_at(self, index: usize) -> Option<Self::Item>
+    where
+        Self: Sized,
+    {
+        m_builtin::element_at(self, index)
+    }
+
+    /// Returns the only element of a sequence.
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// use linq::iter::Enumerable;
+    /// 
+    /// assert!((0..0).single().is_none());
+    /// assert!((0..2).single().is_none());
+    /// assert_eq!((0..1).single(), Some(0));
+    /// ```
+    fn single(self) -> Option<Self::Item>
+    where
+        Self: Sized,
+    {
+        m_method::single(self)
+    }
+
+    /// Inverts the order of the elements in a sequence.
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// use linq::iter::Enumerable;
+    /// 
+    /// let a = [1, 2, 3];
+    /// let mut iter = a.iter().reverse();
+    /// 
+    /// assert_eq!(iter.next(), Some(&3));
+    /// assert_eq!(iter.next(), Some(&2));
+    /// assert_eq!(iter.next(), Some(&1));
+    /// 
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    fn reverse(self) -> ReverseIterator<Self>
+    where
+        Self: Sized + DoubleEndedIterator,
+    {
+        m_builtin::reverse(self)
+    }
+
+    /// Determines whether a sequence contains a specified element by using the default equality comparer.
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// use linq::iter::Enumerable;
+    /// 
+    /// let x = 0..10;
+    /// assert!(x.clone().contains(&0));
+    /// assert!(x.clone().contains(&5));
+    /// assert!(!x.clone().contains(&10));
+    /// ```
+    fn contains(self, value: &Self::Item) -> bool
+    where
+        Self: Sized,
+        Self::Item: Eq,
+    {
+        m_method::contains(self, value)
+    }
+
+    /// Applies an accumulator function over a sequence. The specified seed value is used as the initial accumulator value.
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// use linq::iter::Enumerable;
+    /// 
+    /// let x = 0..10;
+    /// assert_eq!(x.clone().aggregate(1, |b, v| b * v), x.clone().product());
+    /// ```
+    fn aggregate<B, F>(self, init: B, f: F) -> B
+    where
+        Self: Sized,
+        F: FnMut(B, Self::Item) -> B,
+    {
+        m_builtin::aggregate(self, init, f)
     }
 }
 

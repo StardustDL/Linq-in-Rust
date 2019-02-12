@@ -18,16 +18,6 @@ fn select_many() {
 }
 
 #[test]
-fn select_many_nest() {
-    let x = 1..5;
-    let y = vec![0, 1, 0, 1, 2, 3];
-    let e: Vec<i32> = linq!(
-            from p in linq!(from y in x.clone(), where y % 2 == 0, select y), from t in 0..p, select t)
-    .collect();
-    assert_eq!(e, y);
-}
-
-#[test]
 fn select_many_zip() {
     let x = 1..5;
     let y = vec![
@@ -99,4 +89,55 @@ fn concate() {
     let y = 100..200;
     let e = x.concate(y);
     assert!((0..200).eq(e));
+}
+
+#[test]
+fn aggregate() {
+    let x = 0..10;
+    assert_eq!(x.clone().aggregate(1, |b, v| b * v), x.clone().product());
+}
+
+#[test]
+fn contains() {
+    let x = 0..10;
+    assert!(x.clone().contains(&0));
+    assert!(x.clone().contains(&5));
+    assert!(!x.clone().contains(&10));
+}
+
+#[test]
+fn reverse() {
+    let a = [1, 2, 3];
+
+    let mut iter = a.iter().reverse();
+
+    assert_eq!(iter.next(), Some(&3));
+    assert_eq!(iter.next(), Some(&2));
+    assert_eq!(iter.next(), Some(&1));
+
+    assert_eq!(iter.next(), None);
+}
+
+#[test]
+fn single() {
+    assert!((0..0).single().is_none());
+    assert!((0..2).single().is_none());
+    assert_eq!((0..1).single(), Some(0));
+}
+
+#[test]
+fn first() {
+    assert!((0..0).first().is_none());
+    assert_eq!((0..2).first(), Some(0));
+    assert_eq!((0..1).first(), Some(0));
+}
+
+#[test]
+fn element_at() {
+    let a = [1, 2, 3];
+
+    assert_eq!(a.iter().element_at(0), Some(&1));
+    assert_eq!(a.iter().element_at(1), Some(&2));
+    assert_eq!(a.iter().element_at(2), Some(&3));
+    assert_eq!(a.iter().element_at(3), None);
 }

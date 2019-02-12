@@ -70,13 +70,15 @@ The trait `linq::Queryable` supports LINQ methods on `Iterator`. You can find th
 - **Bold** items mean they are implemented in this project. You can find them in module `linq::iter` (but they are private so that you can't import them).
 - *Italic* items mean they are not in roadmap. Happy for your suggestions.
 
+-----
+
 - [x] where => **where_by** => filter
 - [x] **select** => map
 - [x] select_many => **select_many_single, select_many**
-- [x] skip => skip
-- [x] skip_while => skip_while
-- [x] take => take
-- [x] take_while => take_while
+- [x] skip
+- [x] skip_while
+- [x] take
+- [x] take_while
 - [ ] join
 - [ ] *group_join*
 - [x] **concate** => chain
@@ -84,24 +86,25 @@ The trait `linq::Queryable` supports LINQ methods on `Iterator`. You can find th
 - [x] **order_by_descending**
 - [ ] *then_by*
 - [ ] *then_by_descending*
-- [x] reverse => rev
+- [x] **reverse** => rev
 - [ ] *group_by*
 - [ ] *distinct*
 - [ ] *union*
 - [ ] *intersect*
 - [ ] *except*
-- [x] first => next
-- [ ] single
-- [x] element_at => nth
-- [x] all => all
-- [x] any => any
-- [ ] contains
-- [x] count => count
-- [ ] sum
-- [ ] min
-- [ ] max
-- [ ] average
-- [ ] aggregate
+- [x] **first** => next
+- [x] **single**
+- [x] **element_at** => nth
+- [x] all
+- [x] any
+- [x] **contains**
+- [x] count
+- [x] sum
+- [x] product
+- [x] min
+- [x] max
+- [ ] *average*
+- [ ] **aggregate** => fold
 
 ### Expressions
 

@@ -28,3 +28,24 @@ where
 {
     iter.map(f)
 }
+
+pub fn first<I: Iterator>(mut iter: I) -> Option<I::Item> {
+    iter.next()
+}
+
+pub fn element_at<I: Iterator>(mut iter: I, index: usize) -> Option<I::Item> {
+    iter.nth(index)
+}
+
+pub type ReverseIterator<I> = std::iter::Rev<I>;
+
+pub fn reverse<I: DoubleEndedIterator>(iter: I) -> ReverseIterator<I> {
+    iter.rev()
+}
+
+pub fn aggregate<I: Iterator, B, F>(iter: I, init: B, f: F) -> B
+where
+    F: FnMut(B, I::Item) -> B,
+{
+    iter.fold(init, f)
+}
