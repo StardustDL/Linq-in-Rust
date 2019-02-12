@@ -11,12 +11,12 @@
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/StardustDL/Linq-in-Rust.svg)](http://isitmaintained.com/project/StardustDL/Linq-in-Rust "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/StardustDL/Linq-in-Rust.svg)](http://isitmaintained.com/project/StardustDL/Linq-in-Rust "Percentage of issues still open")
 
-Linq query in Rust (created by macros).
+Linq query in Rust (created by declarative macros).
 
 - Inspired by [LINQ in .NET](https://docs.microsoft.com/en-us/dotnet/csharp/linq/).
 - [What's LINQ](https://en.wikipedia.org/wiki/Language_Integrated_Query)
 
-**This project is under development!**
+**This project is under development!** API might be **changed**.
 
 ## Quick Start
 
@@ -33,44 +33,78 @@ fn try_linq(){
     let y: Vec<i32> = y.into_iter().map(|t| t * 2).collect();
 
     let e: Vec<i32> =
-        linq!(from p in x.clone(); where p <= &5; orderby -p; select p * 2).collect();
+        linq!(from p in x.clone(), where p <= &5, orderby -p, select p * 2).collect();
     
     assert_eq!(e, y);
 }
 ```
 
-If you are familier with LINQ in C#, you will find this easy to use.
+If you are familier with LINQ in C#, you will find this is easy to use.
 
-When you use `orderby` and `descending` statement, import `linq::linq_order_by` to your crate root.
+## Usage
 
-When you use two `from` statement, import `linq::linq_multi_from` to your crate root.
-
-```rust
-use linq::linq;
-use linq::linq_multi_from;
-
-fn select_many(){
-    let x = 1..5;
-    let y = vec![0, 0, 1, 0, 1, 2, 0, 1, 2, 3];
-    let e: Vec<i32> = linq!(
-        from p in x.clone(); 
-        from t in 0..p; select t).collect();
-    assert_eq!(e, y);
-}
-```
-
-If you want to filter the first iterator, use nesting `linq!`:
+The query statement begins with `from` clause and ends with `select` clause. Use `,` to seperate every clause.
 
 ```rust
-fn select_many_nest() {
-    let x = 1..5;
-    let y = vec![0, 1, 0, 1, 2, 3];
-    let e: Vec<i32> = linq!(
-        from p in linq!(from y in x.clone(); where y % 2 == 0; select y); 
-        from t in 0..p; select t).collect();
-    assert_eq!(e, y);
-}
+linq!(from x in coll, select x)
 ```
+
+### From
+
+```rust
+from <id> in <iter expr>,
+```
+
+Also you can enumerate elements of each set in the collection (Attention: for this type, you can't access the value that is in the first `from` clause in `select` clause):
+
+```rust
+let x = 1..5;
+let y = vec![0, 0, 1, 0, 1, 2, 0, 1, 2, 3];
+let e: Vec<i32> = linq!(from p in x.clone(), from t in 0..p, select t).collect();
+
+assert_eq!(e, y);
+```
+
+If you want to zip or enumerate value-pairs of two sets, use `zfrom` for the second `from`:
+
+```rust
+let x = 1..5;
+let y = vec![
+    (1, 0),
+    (2, 0),
+    (2, 1),
+    (3, 0),
+    (3, 1),
+    (3, 2),
+    (4, 0),
+    (4, 1),
+    (4, 2),
+    (4, 3),
+];
+let e: Vec<_> = linq!(from p in x.clone(), zfrom t in 0..p, select (p,t)).collect();
+
+assert_eq!(e, y);
+```
+
+The expression in `zfrom` recieve the cloned value in the first `from`,
+and the elements in two sets will be cloned for `select` clause.
+
+### Where
+
+```rust
+while <expr>,
+```
+
+You can use `where` clause in single-from query, and the expression will recieve a variable named the `id` in `from` clause. The expression need to return a boolean value.
+
+### Orderby
+
+```rust
+orderby <expr>,
+orderby <expr>, descending,
+```
+
+You can use `orderby` clause in single-from query. This query will collect the iterator, and sort them by the expression, then return the new iterator.
 
 ## Linq Keywords
 
@@ -89,11 +123,11 @@ fn select_many_nest() {
 
 All *italic* items mean they are not in roadmap. Happy for your suggestions.
 
-All **bold** items mean they are implemented in this project.
+All **bold** items mean they are implemented in this project. You can find them in module `linq::ops`.
 
-- [x] where => filter
-- [x] select => map
-- [x] select_many => **linq_multi_from**
+- [x] where => **where_by** => filter
+- [x] select => **select_one** => map
+- [x] select_many => **select_many, select_many_zip, select_two**
 - [x] skip => skip
 - [x] skip_while => skip_while
 - [x] take => take
@@ -101,8 +135,8 @@ All **bold** items mean they are implemented in this project.
 - [ ] join
 - [ ] *group_join*
 - [x] concate => chain
-- [x] order_by => **linq_order_by**
-- [x] order_by_descending => **linq_order_by**
+- [x] order_by => **order_by**
+- [x] order_by_descending => **order_by**
 - [ ] *then_by*
 - [ ] *then_by_descending*
 - [x] reverse => rev
@@ -127,6 +161,8 @@ All **bold** items mean they are implemented in this project.
 ## Development
 
 We need more unit-test samples. If you have any ideas, open issues to tell us.
+
+Since the expression procedural macros is not stable, I only create macros by declarative macros.
 
 ```sh
 $ cargo test

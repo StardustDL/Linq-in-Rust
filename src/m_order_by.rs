@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub enum OrderedIterator<T> {
     Inscending(std::vec::IntoIter<T>),
     Descending(std::iter::Rev<std::vec::IntoIter<T>>),
