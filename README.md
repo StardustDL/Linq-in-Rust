@@ -1,8 +1,6 @@
 # Linq in Rust
 
-[![](https://img.shields.io/travis/StardustDL/Linq-in-Rust.svg)](https://travis-ci.org/StardustDL/Linq-in-Rust)
-[![](https://img.shields.io/codecov/c/gh/StardustDL/Linq-in-Rust.svg)](https://codecov.io/gh/StardustDL/Linq-in-Rust)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f5f2e7f76dbb45cca9a9abc084568b9f)](https://www.codacy.com/app/StardustDL/Linq-in-Rust?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=StardustDL/Linq-in-Rust&amp;utm_campaign=Badge_Grade)
+![CI](https://github.com/StardustDL/Linq-in-Rust/workflows/CI/badge.svg)
 [![](https://img.shields.io/librariesio/github/StardustDL/Linq-in-Rust.svg)](https://libraries.io/cargo/linq)
 [![](https://img.shields.io/crates/v/linq.svg)](https://crates.io/crates/linq)
 [![](https://img.shields.io/crates/v/linq.svg?label=docs&&colorA=blue)](https://docs.rs/linq/)
