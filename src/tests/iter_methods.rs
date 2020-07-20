@@ -141,3 +141,15 @@ fn element_at() {
     assert_eq!(a.iter().element_at(2), Some(&3));
     assert_eq!(a.iter().element_at(3), None);
 }
+
+#[test]
+fn distict() {
+    let a = [1, 2, 3, 2, 3, 5];
+    let mut iter = a.iter().distinct(); 
+    assert_eq!(iter.next(), Some(&1));
+    assert_eq!(iter.next(), Some(&2));
+    assert_eq!(iter.next(), Some(&3));
+    assert_eq!(iter.next(), Some(&5));
+
+    assert_eq!(iter.next(), None);
+}

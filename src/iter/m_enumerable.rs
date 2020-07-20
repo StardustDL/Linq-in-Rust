@@ -1,4 +1,4 @@
-use super::{m_builtin, m_method, m_order_by, m_select};
+use super::{m_builtin, m_method, m_order_by, m_select, m_distinct};
 use m_builtin::{ConcateIterator, ReverseIterator, SelectIterator, WhereIterator};
 use m_order_by::OrderedIterator;
 use m_select::{SelectManyIterator, SelectManySingleIterator};
@@ -302,6 +302,15 @@ pub trait Enumerable: Iterator {
     {
         m_builtin::aggregate(self, init, f)
     }
+
+    fn distinct(self) -> m_distinct::DistinctIterator<Self>
+    where
+        Self: Sized,
+        Self::Item: Eq + std::hash::Hash + Copy,
+    {
+        m_distinct::distinct(self)
+    }
+    
 }
 
 impl<I, T> Enumerable for I where I: Iterator<Item = T> {}
