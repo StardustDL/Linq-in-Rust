@@ -153,3 +153,18 @@ fn distict() {
 
     assert_eq!(iter.next(), None);
 }
+
+#[test]
+fn union() {
+    let a = [1, 2, 3, 2, 3, 4];
+    let b = [1, 2, 2, 5, 3, 6];
+    let mut iter = a.iter().union(b.iter()); 
+    assert_eq!(iter.next(), Some(&1));
+    assert_eq!(iter.next(), Some(&2));
+    assert_eq!(iter.next(), Some(&3));
+    assert_eq!(iter.next(), Some(&4));
+    assert_eq!(iter.next(), Some(&5));
+    assert_eq!(iter.next(), Some(&6));
+
+    assert_eq!(iter.next(), None);
+}

@@ -19,9 +19,8 @@ where
         loop {
             match self.source.next() {
                 Some(item) => {
-                     if !self.hash_map.contains(&item)
+                     if self.hash_map.insert(item)
                     {
-                        self.hash_map.insert(item);
                         return Some(item);
                     }
                 }

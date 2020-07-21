@@ -1,4 +1,4 @@
-use super::{m_builtin, m_method, m_order_by, m_select, m_distinct};
+use super::{m_builtin, m_method, m_order_by, m_select, m_distinct, m_union};
 use m_builtin::{ConcateIterator, ReverseIterator, SelectIterator, WhereIterator};
 use m_order_by::OrderedIterator;
 use m_select::{SelectManyIterator, SelectManySingleIterator};
@@ -309,6 +309,15 @@ pub trait Enumerable: Iterator {
         Self::Item: Eq + std::hash::Hash + Copy,
     {
         m_distinct::distinct(self)
+    }
+
+    fn union<U>(self, union_with : U) -> m_union::UnionIterator<Self, U>
+    where
+        Self: Sized,
+        Self::Item: Eq + std::hash::Hash + Copy,
+        U: Enumerable<Item = Self::Item>,
+    {
+        m_union::union(self, union_with)
     }
     
 }
