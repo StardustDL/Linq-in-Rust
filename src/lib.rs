@@ -33,33 +33,65 @@ macro_rules! linq {
     {
         $c.select(|$v| $ms)
     };
+    (from $v:ident in $c:expr, select distinct $ms:expr) =>
+    {
+        $c.select(|$v| $ms).distinct()
+    };
     (from $v:ident in $c:expr, $(where $mw:expr,)+ select $ms:expr) =>
     {
         $c.where_by(|$v| true $(&& $mw)+ ).select(|$v| $ms)
+    };
+    (from $v:ident in $c:expr, $(where $mw:expr,)+ select distinct $ms:expr) =>
+    {
+        $c.where_by(|$v| true $(&& $mw)+ ).select(|$v| $ms).distinct()
     };
     (from $v:ident in $c:expr, orderby $mo:expr, select $ms:expr) =>
     {
         $c.order_by(|$v| $mo).select(|$v| $ms)
     };
+    (from $v:ident in $c:expr, orderby $mo:expr, select distinct $ms:expr) =>
+    {
+        $c.order_by(|$v| $mo).select(|$v| $ms).distinct()
+    };
     (from $v:ident in $c:expr, orderby $mo:expr, descending, select $ms:expr) =>
     {
         $c.order_by_descending(|$v| $mo).select(|$v| $ms)
+    };
+    (from $v:ident in $c:expr, orderby $mo:expr, descending, select distinct $ms:expr) =>
+    {
+        $c.order_by_descending(|$v| $mo).select(|$v| $ms).distinct()
     };
     (from $v:ident in $c:expr, $(where $mw:expr,)+ orderby $mo:expr, select $ms:expr) =>
     {
         $c.where_by(|$v| true $(&& $mw)+ ).order_by(|$v| $mo).select(|$v| $ms)
     };
+    (from $v:ident in $c:expr, $(where $mw:expr,)+ orderby $mo:expr, select distinct $ms:expr) =>
+    {
+        $c.where_by(|$v| true $(&& $mw)+ ).order_by(|$v| $mo).select(|$v| $ms).distinct()
+    };
     (from $v:ident in $c:expr, $(where $mw:expr,)+ orderby $mo:expr, descending, select $ms:expr) =>
     {
         $c.where_by(|$v| true $(&& $mw)+ ).order_by_descending(|$v| $mo).select(|$v| $ms)
+    };
+    (from $v:ident in $c:expr, $(where $mw:expr,)+ orderby $mo:expr, descending, select distinct $ms:expr) =>
+    {
+        $c.where_by(|$v| true $(&& $mw)+ ).order_by_descending(|$v| $mo).select(|$v| $ms).distinct()
     };
     (from $v0:ident in $c0:expr, from $v:ident in $c:expr, select $ms:expr) =>
     {
         $c0.select_many_single(|$v0| $c).select(|$v| $ms)
     };
+    (from $v0:ident in $c0:expr, from $v:ident in $c:expr, select distinct $ms:expr) =>
+    {
+        $c0.select_many_single(|$v0| $c).select(|$v| $ms).distinct()
+    };
     (from $v0:ident in $c0:expr, zfrom $v:ident in $c:expr, select $ms:expr) =>
     {
         $c0.select_many(|$v0| $c, |$v0, $v| $ms)
+    };
+    (from $v0:ident in $c0:expr, zfrom $v:ident in $c:expr, select distinct $ms:expr) =>
+    {
+        $c0.select_many(|$v0| $c, |$v0, $v| $ms).distinct()
     };
 }
 

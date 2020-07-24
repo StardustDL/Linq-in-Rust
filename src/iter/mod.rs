@@ -5,5 +5,7 @@ mod m_order_by;
 mod m_select;
 mod m_builtin;
 mod m_method;
+mod m_distinct;
+mod m_union;
 
 pub use m_enumerable::*;

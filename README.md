@@ -86,8 +86,8 @@ The trait `linq::Queryable` supports LINQ methods on `Iterator`. You can find th
 - [ ] *then_by_descending*
 - [x] **reverse** => rev
 - [ ] *group_by*
-- [ ] *distinct*
-- [ ] *union*
+- [x] distinct
+- [x] union
 - [ ] *intersect*
 - [ ] *except*
 - [x] **first** => next
