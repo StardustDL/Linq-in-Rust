@@ -1,6 +1,5 @@
-use linq::linq;
 use linq::iter::Enumerable;
-
+use linq::linq;
 
 #[test]
 fn try_linq() {
