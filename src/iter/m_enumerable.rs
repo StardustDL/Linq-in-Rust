@@ -1,4 +1,4 @@
-use super::{m_builtin, m_method, m_order_by, m_select, m_distinct, m_union};
+use super::{m_builtin, m_distinct, m_method, m_order_by, m_select, m_union};
 use m_builtin::{ConcateIterator, ReverseIterator, SelectIterator, WhereIterator};
 use m_order_by::OrderedIterator;
 use m_select::{SelectManyIterator, SelectManySingleIterator};
@@ -166,12 +166,12 @@ pub trait Enumerable: Iterator {
     }
 
     /// Concatenates two sequences.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use linq::iter::Enumerable;
-    /// 
+    ///
     /// let x = 0..100;
     /// let y = 100..200;
     /// let e = x.concate(y);
@@ -186,12 +186,12 @@ pub trait Enumerable: Iterator {
     }
 
     /// Returns the first element of a sequence.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use linq::iter::Enumerable;
-    /// 
+    ///
     /// assert!((0..0).first().is_none());
     /// assert_eq!((0..2).first(), Some(0));
     /// assert_eq!((0..1).first(), Some(0));
@@ -204,14 +204,14 @@ pub trait Enumerable: Iterator {
     }
 
     /// Returns the index-th element of the iterator.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use linq::iter::Enumerable;
-    /// 
+    ///
     /// let a = [1, 2, 3];
-    /// 
+    ///
     /// assert_eq!(a.iter().element_at(0), Some(&1));
     /// assert_eq!(a.iter().element_at(1), Some(&2));
     /// assert_eq!(a.iter().element_at(2), Some(&3));
@@ -225,12 +225,12 @@ pub trait Enumerable: Iterator {
     }
 
     /// Returns the only element of a sequence.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use linq::iter::Enumerable;
-    /// 
+    ///
     /// assert!((0..0).single().is_none());
     /// assert!((0..2).single().is_none());
     /// assert_eq!((0..1).single(), Some(0));
@@ -243,19 +243,19 @@ pub trait Enumerable: Iterator {
     }
 
     /// Inverts the order of the elements in a sequence.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use linq::iter::Enumerable;
-    /// 
+    ///
     /// let a = [1, 2, 3];
     /// let mut iter = a.iter().reverse();
-    /// 
+    ///
     /// assert_eq!(iter.next(), Some(&3));
     /// assert_eq!(iter.next(), Some(&2));
     /// assert_eq!(iter.next(), Some(&1));
-    /// 
+    ///
     /// assert_eq!(iter.next(), None);
     /// ```
     fn reverse(self) -> ReverseIterator<Self>
@@ -266,12 +266,12 @@ pub trait Enumerable: Iterator {
     }
 
     /// Determines whether a sequence contains a specified element by using the default equality comparer.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use linq::iter::Enumerable;
-    /// 
+    ///
     /// let x = 0..10;
     /// assert!(x.clone().contains(&0));
     /// assert!(x.clone().contains(&5));
@@ -286,12 +286,12 @@ pub trait Enumerable: Iterator {
     }
 
     /// Applies an accumulator function over a sequence. The specified seed value is used as the initial accumulator value.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use linq::iter::Enumerable;
-    /// 
+    ///
     /// let x = 0..10;
     /// assert_eq!(x.clone().aggregate(1, |b, v| b * v), x.clone().product());
     /// ```
@@ -311,7 +311,7 @@ pub trait Enumerable: Iterator {
         m_distinct::distinct(self)
     }
 
-    fn union<U>(self, union_with : U) -> m_union::UnionIterator<Self, U>
+    fn union<U>(self, union_with: U) -> m_union::UnionIterator<Self, U>
     where
         Self: Sized,
         Self::Item: Eq + std::hash::Hash + Copy,
@@ -319,7 +319,6 @@ pub trait Enumerable: Iterator {
     {
         m_union::union(self, union_with)
     }
-    
 }
 
 impl<I, T> Enumerable for I where I: Iterator<Item = T> {}
