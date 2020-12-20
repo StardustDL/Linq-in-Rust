@@ -86,6 +86,8 @@ fn where_order() {
 fn distinct() {
     let x = [1, 2, 4, 2, 5, 6];
     let y: Vec<i32> = x.iter().distinct().cloned().collect();
-    let e: Vec<i32> = linq!(from p in x.iter(), select distinct p).cloned().collect();
+    let e: Vec<i32> = linq!(from p in x.iter(), select distinct p)
+        .cloned()
+        .collect();
     assert_eq!(e, y);
 }

@@ -145,7 +145,7 @@ fn element_at() {
 #[test]
 fn distict() {
     let a = [1, 2, 3, 2, 3, 5];
-    let mut iter = a.iter().distinct(); 
+    let mut iter = a.iter().distinct();
     assert_eq!(iter.next(), Some(&1));
     assert_eq!(iter.next(), Some(&2));
     assert_eq!(iter.next(), Some(&3));
@@ -158,7 +158,7 @@ fn distict() {
 fn union() {
     let a = [1, 2, 3, 2, 3, 4];
     let b = [1, 2, 2, 5, 3, 6];
-    let mut iter = a.iter().union(b.iter()); 
+    let mut iter = a.iter().union(b.iter());
     assert_eq!(iter.next(), Some(&1));
     assert_eq!(iter.next(), Some(&2));
     assert_eq!(iter.next(), Some(&3));
