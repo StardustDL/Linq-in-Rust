@@ -168,7 +168,7 @@ and the elements in two sets will be cloned for `select` clause.
 ### Where
 
 ```rust
-while <expr>,
+where <expr>,
 ```
 
 You can use `where` clause in single-from query, and the expression will recieve a variable named the `id` in `from` clause. The expression need to return a boolean value.
